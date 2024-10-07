@@ -9,20 +9,39 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { useToast } from "@/hooks/use-toast"
 
 interface AddVideoModalProps {
   isOpen: boolean
   onClose: () => void
-  onSubmit: (url: string) => void
+  onSubmit: (url: string) => Promise<void>
 }
 
 export function AddVideoModal({ isOpen, onClose, onSubmit }: AddVideoModalProps) {
   const [url, setUrl] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { toast } = useToast()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    onSubmit(url)
-    setUrl('')
+    setIsSubmitting(true)
+    try {
+      await onSubmit(url)
+      setUrl('')
+      toast({
+        title: "Success",
+        description: "Video added successfully",
+      })
+      onClose()
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to add video. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -41,10 +60,13 @@ export function AddVideoModal({ isOpen, onClose, onSubmit }: AddVideoModalProps)
               placeholder="https://www.youtube.com/watch?v=..."
               value={url}
               onChange={(e) => setUrl(e.target.value)}
+              disabled={isSubmitting}
             />
           </div>
           <DialogFooter>
-            <Button type="submit">Add Video</Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Adding...' : 'Add Video'}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

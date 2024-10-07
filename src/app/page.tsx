@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
 import { Plus } from 'lucide-react'  // Import the Plus icon
 import { AddVideoModal } from "@/components/add-video-modal"
+import { Toaster } from "@/components/ui/toaster"
 
 export enum VideoProcessingStatus {
   PENDING = 'pending',
@@ -40,30 +41,37 @@ export default function Home() {
   const [videoCards, setVideoCards] = useState<VideoCard[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchVideos = async () => {
-      try {
-        const response = await fetch('http://localhost:3000/youtube-videos');
-        if (!response.ok) {
-          throw new Error('Failed to fetch videos');
-        }
-        const data = await response.json();
-        console.log(data)
-        setVideoCards(data);
-      } catch (error) {
-        console.error('Error fetching videos:', error);
+  const fetchVideos = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/youtube-videos');
+      if (!response.ok) {
+        throw new Error('Failed to fetch videos');
       }
-    };
+      const data = await response.json();
+      setVideoCards(data);
+    } catch (error) {
+      console.error('Error fetching videos:', error);
+    }
+  };
 
+  useEffect(() => {
     fetchVideos();
   }, []);
 
   const handleAddVideo = async (url: string) => {
-    // Here you would typically send a request to your backend to add the video
-    console.log("Adding video with URL:", url);
-    setIsModalOpen(false);
-    // After adding the video, you might want to refresh the video list
-    // fetchVideos();
+    const response = await fetch('http://localhost:3000/youtube-videos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ url }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to add video');
+    }
+
+    await fetchVideos();
   };
 
   return (
@@ -117,6 +125,7 @@ export default function Home() {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleAddVideo}
       />
+      <Toaster />
     </div>
   );
 }
