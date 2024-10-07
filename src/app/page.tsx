@@ -1,101 +1,107 @@
-import Image from "next/image";
+'use client'
+
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { useEffect, useState } from "react"
+import { Plus } from 'lucide-react'  // Import the Plus icon
+
+export enum VideoProcessingStatus {
+  PENDING = 'pending',
+  AUDIO_FETCHED = 'audio_fetched',
+  TRANSCRIPT_GENERATED = 'transcript_generated',
+  TOPICS_FETCHED = 'topics_fetched',
+}
+
+function mapStatusToFrontend(status: VideoProcessingStatus): string {
+  switch (status) {
+    case VideoProcessingStatus.PENDING:
+      return 'Pending';
+    case VideoProcessingStatus.AUDIO_FETCHED:
+    case VideoProcessingStatus.TRANSCRIPT_GENERATED:
+      return 'In Progress';
+    case VideoProcessingStatus.TOPICS_FETCHED:
+      return 'Done';
+    default:
+      return 'Unknown';
+  }
+}
+
+interface VideoCard {
+  id: string;
+  youtubeId: string;
+  title: string | null;
+  processingStatus: VideoProcessingStatus;
+  cheatsheetCount: number;
+  thumbnailUrl: string;
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [videoCards, setVideoCards] = useState<VideoCard[]>([]);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/youtube-videos');
+        if (!response.ok) {
+          throw new Error('Failed to fetch videos');
+        }
+        const data = await response.json();
+        console.log(data)
+        setVideoCards(data);
+      } catch (error) {
+        console.error('Error fetching videos:', error);
+      }
+    };
+
+    fetchVideos();
+  }, []);
+
+  return (
+    <div className="container mx-auto py-8">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Video Gallery</h1>
+        <Button>
+          <Plus className="mr-2 h-4 w-4" /> Add a video
+        </Button>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {videoCards.map((card) => (
+          <Card key={card.id} className="overflow-hidden flex flex-col h-full">
+            <CardHeader className="p-0 relative">
+              <img
+                src={card.thumbnailUrl || '/images/thumbnail-placeholder.png'}
+                alt={`Thumbnail for ${card.title}`}
+                className="w-full h-48 object-cover"
+              />
+              <span className="absolute top-2 right-2 bg-primary text-primary-foreground px-2 py-1 rounded text-sm font-semibold">
+                {mapStatusToFrontend(card.processingStatus)}
+              </span>
+            </CardHeader>
+            <CardContent className="p-4 flex-grow">
+              <CardTitle className="text-lg mb-2 line-clamp-2 h-14">
+                <a href={`https://www.youtube.com/watch?v=${card.youtubeId}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                  {card.title}
+                </a>
+              </CardTitle>
+              <p className="text-sm text-muted-foreground mb-2">ID: {card.youtubeId}</p>
+              <p className="text-sm text-muted-foreground">Cheatsheets: {card.cheatsheetCount}</p>
+            </CardContent>
+            <CardFooter className="p-4 pt-0 flex justify-between items-center h-16">
+              {card.cheatsheetCount > 0 && (
+                <Button variant="outline">View Cheatsheets</Button>
+              )}
+              {card.processingStatus === VideoProcessingStatus.TOPICS_FETCHED && (
+                <Button>Create Cheatsheet</Button>
+              )}
+              {card.cheatsheetCount === 0 && card.processingStatus !== VideoProcessingStatus.TOPICS_FETCHED && (
+                <div className="w-full text-center text-sm text-muted-foreground">
+                  Processing video...
+                </div>
+              )}
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }
