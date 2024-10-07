@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import { Plus } from 'lucide-react'  // Import the Plus icon
 import { AddVideoModal } from "@/components/add-video-modal"
 import { Toaster } from "@/components/ui/toaster"
+import Link from 'next/link'  // Add this import
 
 export enum VideoProcessingStatus {
   PENDING = 'pending',
@@ -109,7 +110,9 @@ export default function Home() {
                 <Button variant="outline">View Cheatsheets</Button>
               )}
               {card.processingStatus === VideoProcessingStatus.TOPICS_FETCHED && (
-                <Button>Create Cheatsheet</Button>
+                <Link href={`/create-cheatsheet?id=${card.id}`} passHref>
+                  <Button>Create Cheatsheet</Button>
+                </Link>
               )}
               {card.cheatsheetCount === 0 && card.processingStatus !== VideoProcessingStatus.TOPICS_FETCHED && (
                 <div className="w-full text-center text-sm text-muted-foreground">
