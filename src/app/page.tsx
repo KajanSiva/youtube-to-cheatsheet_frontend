@@ -4,6 +4,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
 import { Plus } from 'lucide-react'  // Import the Plus icon
+import { AddVideoModal } from "@/components/add-video-modal"
 
 export enum VideoProcessingStatus {
   PENDING = 'pending',
@@ -37,6 +38,7 @@ interface VideoCard {
 
 export default function Home() {
   const [videoCards, setVideoCards] = useState<VideoCard[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchVideos = async () => {
@@ -56,11 +58,19 @@ export default function Home() {
     fetchVideos();
   }, []);
 
+  const handleAddVideo = async (url: string) => {
+    // Here you would typically send a request to your backend to add the video
+    console.log("Adding video with URL:", url);
+    setIsModalOpen(false);
+    // After adding the video, you might want to refresh the video list
+    // fetchVideos();
+  };
+
   return (
     <div className="container mx-auto py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Video Gallery</h1>
-        <Button>
+        <Button onClick={() => setIsModalOpen(true)}>
           <Plus className="mr-2 h-4 w-4" /> Add a video
         </Button>
       </div>
@@ -102,6 +112,11 @@ export default function Home() {
           </Card>
         ))}
       </div>
+      <AddVideoModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleAddVideo}
+      />
     </div>
   );
 }
