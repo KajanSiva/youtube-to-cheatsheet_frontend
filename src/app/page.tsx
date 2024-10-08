@@ -3,10 +3,8 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
-import { Plus } from 'lucide-react'  // Import the Plus icon
 import { AddVideoModal } from "@/components/add-video-modal"
-import { Toaster } from "@/components/ui/toaster"
-import Link from 'next/link'  // Add this import
+import Link from 'next/link'
 
 export enum VideoProcessingStatus {
   PENDING = 'pending',
@@ -115,7 +113,7 @@ export default function Home() {
               </div>
               <div>
                 {card.processingStatus === VideoProcessingStatus.TOPICS_FETCHED ? (
-                  <Link href={`/create-cheatsheet?id=${card.id}`} passHref>
+                  <Link href={`/create-cheatsheet?videoId=${card.id}`} passHref>
                     <Button>Create Cheatsheet</Button>
                   </Link>
                 ) : (
@@ -131,7 +129,6 @@ export default function Home() {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleAddVideo}
       />
-      <Toaster />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from 'next/link'
 import localFont from "next/font/local";
 import "./globals.css";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -35,7 +36,8 @@ export default function RootLayout({
           </Link>
         </header>
         <main>
-          {children}
+        {children}
+        <Toaster />
         </main>
       </body>
     </html>
