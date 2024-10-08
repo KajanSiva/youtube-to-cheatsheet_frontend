@@ -80,7 +80,7 @@ export default function Home() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Video Gallery</h1>
         <Button onClick={() => setIsModalOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" /> Add a video
+          Add a video
         </Button>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -106,19 +106,22 @@ export default function Home() {
               <p className="text-sm text-muted-foreground">Cheatsheets: {card.cheatsheetCount}</p>
             </CardContent>
             <CardFooter className="p-4 pt-0 flex justify-between items-center h-16">
-              {card.cheatsheetCount > 0 && (
-                <Button variant="outline">View Cheatsheets</Button>
-              )}
-              {card.processingStatus === VideoProcessingStatus.TOPICS_FETCHED && (
-                <Link href={`/create-cheatsheet?id=${card.id}`} passHref>
-                  <Button>Create Cheatsheet</Button>
-                </Link>
-              )}
-              {card.cheatsheetCount === 0 && card.processingStatus !== VideoProcessingStatus.TOPICS_FETCHED && (
-                <div className="w-full text-center text-sm text-muted-foreground">
-                  Processing video...
-                </div>
-              )}
+              <div className="flex-grow">
+                {card.cheatsheetCount > 0 && (
+                  <Link href={`/cheatsheets?videoId=${card.id}`} passHref>
+                    <Button variant="outline">View Cheatsheets</Button>
+                  </Link>
+                )}
+              </div>
+              <div>
+                {card.processingStatus === VideoProcessingStatus.TOPICS_FETCHED ? (
+                  <Link href={`/create-cheatsheet?id=${card.id}`} passHref>
+                    <Button>Create Cheatsheet</Button>
+                  </Link>
+                ) : (
+                  <Button disabled>Create Cheatsheet</Button>
+                )}
+              </div>
             </CardFooter>
           </Card>
         ))}
