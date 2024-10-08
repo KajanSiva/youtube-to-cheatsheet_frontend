@@ -65,13 +65,7 @@ export default function CheatsheetsList() {
 
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return date.toLocaleString();
   };
 
   return (
@@ -123,7 +117,9 @@ export default function CheatsheetsList() {
               <p className="text-sm text-muted-foreground mb-2">Topics: {cheatsheet.neededTopics.length}</p>
             </CardContent>
             <CardFooter className="p-4 pt-0">
-              <Button variant="outline" className="w-full">View Cheatsheet</Button>
+              <Link href={`/cheatsheets/${cheatsheet.id}`} passHref>
+                <Button variant="outline" className="w-full">View Cheatsheet</Button>
+              </Link>
             </CardFooter>
           </Card>
         ))}

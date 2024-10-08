@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from 'next/link'
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -29,7 +30,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <header className="bg-primary text-primary-foreground p-4">
-          <h1 className="text-2xl font-bold">Video to Cheatsheet</h1>
+          <Link href="/" className="text-2xl font-bold hover:underline">
+            Video to Cheatsheet
+          </Link>
         </header>
         <main>
           {children}
