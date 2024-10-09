@@ -3,16 +3,9 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
-import Link from 'next/link'
 
 interface CheatsheetContent {
-  summary: string;
-  glossary: string[];
-  keyPoints: string[];
-  detailedNotes: string[];
-  importantQuotes: string[];
-  actionsTakeaways: string[];
-  referencesAndResources: string[];
+  [key: string]: any;
 }
 
 interface Cheatsheet {
@@ -56,6 +49,39 @@ export default function CheatsheetDetail({ params }: { params: { cheatsheetId: s
     return date.toLocaleString();
   };
 
+  const renderContent = (content: any, depth: number = 0) => {
+    if (typeof content === 'string') {
+      return <p>{content}</p>;
+    }
+
+    if (Array.isArray(content)) {
+      return (
+        <ul className="list-disc pl-6">
+          {content.map((item, index) => (
+            <li key={index}>{renderContent(item, depth + 1)}</li>
+          ))}
+        </ul>
+      );
+    }
+
+    if (typeof content === 'object' && content !== null) {
+      return (
+        <div className="space-y-4">
+          {Object.entries(content).map(([key, value]) => (
+            <div key={key}>
+              <h3 className={`font-semibold ${depth === 0 ? 'text-2xl mb-4' : 'text-xl mb-2'}`}>
+                {key.charAt(0).toUpperCase() + key.slice(1)}
+              </h3>
+              {renderContent(value, depth + 1)}
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <div className="container mx-auto py-8">
       <div className="flex justify-between items-center mb-6">
@@ -65,65 +91,10 @@ export default function CheatsheetDetail({ params }: { params: { cheatsheetId: s
         </p>
       </div>
 
-      <h1 className="text-3xl font-bold mb-6">Cheatsheet content</h1>
+      <h1 className="text-3xl font-bold mb-6">Cheatsheet Content</h1>
 
       <div className="space-y-8">
-        <section>
-          <h2 className="text-2xl font-semibold mb-4">Summary</h2>
-          <p>{cheatsheet.content.summary}</p>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-semibold mb-4">Glossary</h2>
-          <ul className="list-disc pl-6">
-            {cheatsheet.content.glossary.map((item, index) => (
-              <li key={index}>{item}</li>
-            ))}
-          </ul>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-semibold mb-4">Key Points</h2>
-          <ul className="list-disc pl-6">
-            {cheatsheet.content.keyPoints.map((point, index) => (
-              <li key={index}>{point}</li>
-            ))}
-          </ul>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-semibold mb-4">Detailed Notes</h2>
-          {cheatsheet.content.detailedNotes.map((note, index) => (
-            <p key={index} className="mb-2" dangerouslySetInnerHTML={{ __html: note }} />
-          ))}
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-semibold mb-4">Important Quotes</h2>
-          <ul className="list-disc pl-6">
-            {cheatsheet.content.importantQuotes.map((quote, index) => (
-              <li key={index}>{quote}</li>
-            ))}
-          </ul>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-semibold mb-4">Actions & Takeaways</h2>
-          <ul className="list-disc pl-6">
-            {cheatsheet.content.actionsTakeaways.map((action, index) => (
-              <li key={index}>{action}</li>
-            ))}
-          </ul>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-semibold mb-4">References & Resources</h2>
-          <ul className="list-disc pl-6">
-            {cheatsheet.content.referencesAndResources.map((resource, index) => (
-              <li key={index}>{resource}</li>
-            ))}
-          </ul>
-        </section>
+        {renderContent(cheatsheet.content)}
       </div>
     </div>
   );
