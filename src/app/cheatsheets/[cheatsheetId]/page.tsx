@@ -14,9 +14,8 @@ interface Cheatsheet {
   id: string;
   videoId: string;
   processingStatus: string;
-  neededTopics: string[];
+  comment: string;
   content: CheatsheetContent;
-  language: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -84,6 +83,11 @@ export default function CheatsheetDetail({ params }: { params: { cheatsheetId: s
         <p className="text-sm text-gray-500">
           Created: {formatDateTime(cheatsheet.createdAt)}
         </p>
+      </div>
+
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold mb-2">Comment</h2>
+        <p className="text-gray-700">{cheatsheet.comment}</p>
       </div>
 
       <div className="space-y-8">

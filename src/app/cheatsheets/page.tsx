@@ -11,8 +11,7 @@ interface Cheatsheet {
   id: string;
   videoId: string;
   processingStatus: string;
-  neededTopics: string[];
-  language: string;
+  comment: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -112,9 +111,8 @@ export default function CheatsheetsList() {
               <CardTitle className="text-lg mb-2">{formatDateTime(cheatsheet.createdAt)}</CardTitle>
             </CardHeader>
             <CardContent className="p-4 flex-grow">
-              <p className="text-sm text-muted-foreground mb-2">Language: {cheatsheet.language.toUpperCase()}</p>
               <p className="text-sm text-muted-foreground mb-2">Status: {cheatsheet.processingStatus}</p>
-              <p className="text-sm text-muted-foreground mb-2">Topics: {cheatsheet.neededTopics.length}</p>
+              <p className="text-sm text-muted-foreground mb-2">Comment: {cheatsheet.comment}</p>
             </CardContent>
             <CardFooter className="p-4 pt-0">
               <Link href={`/cheatsheets/${cheatsheet.id}`} passHref>

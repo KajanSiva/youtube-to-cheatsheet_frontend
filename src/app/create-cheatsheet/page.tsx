@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
+import { Input } from "@/components/ui/input"
 
 interface VideoDetails {
   id: string;
@@ -41,6 +42,7 @@ export default function CreateCheatsheet() {
   const [selectedLanguage, setSelectedLanguage] = useState('')
   const [selectedTopics, setSelectedTopics] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [comment, setComment] = useState('')
 
   useEffect(() => {
     const fetchData = async () => {
@@ -81,20 +83,15 @@ export default function CreateCheatsheet() {
     )
   }
 
-  const handleSubmit = async () => {
-    if (!selectedLanguage) {
-      toast({
-        title: "Error",
-        description: "Please select a language.",
-        variant: "destructive",
-      })
-      return
-    }
+  const handleCommentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setComment(event.target.value)
+  }
 
-    if (selectedTopics.length === 0) {
+  const handleSubmit = async () => {
+    if (!comment.trim()) {
       toast({
         title: "Error",
-        description: "Please select at least one topic.",
+        description: "Please enter a comment.",
         variant: "destructive",
       })
       return
@@ -110,8 +107,7 @@ export default function CreateCheatsheet() {
         },
         body: JSON.stringify({
           videoId,
-          neededTopics: selectedTopics,
-          language: selectedLanguage,
+          comment,
         }),
       })
 
@@ -149,45 +145,19 @@ export default function CreateCheatsheet() {
       <h1 className="text-3xl font-bold mb-6">Create Cheatsheet for: {videoDetails.title}</h1>
       
       <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-2">1. Select Language</h2>
-        <p className="text-gray-600 mb-4">Choose the language for your cheatsheet:</p>
-        <Select onValueChange={handleLanguageChange}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select language" />
-          </SelectTrigger>
-          <SelectContent>
-            {languages.map(lang => (
-              <SelectItem key={lang.code} value={lang.code}>
-                {lang.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-2">2. Choose Topics</h2>
-        <p className="text-gray-600 mb-4">Select one or more topics to include in your cheatsheet:</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {discussionTopics.themes.map((theme, index) => (
-            <Card 
-              key={index} 
-              className={`cursor-pointer ${selectedTopics.includes(theme.title) ? 'border-blue-500 border-2' : ''}`}
-              onClick={() => handleTopicToggle(theme.title)}
-            >
-              <CardHeader>
-                <CardTitle>{theme.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p>{theme.description}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <h2 className="text-xl font-semibold mb-2">Enter Your Comment</h2>
+        <p className="text-gray-600 mb-4">Provide a comment or instructions for generating the cheatsheet:</p>
+        <Input
+          type="text"
+          placeholder="Enter your comment here"
+          value={comment}
+          onChange={handleCommentChange}
+          className="w-full"
+        />
       </div>
 
       <div>
-        <h2 className="text-xl font-semibold mb-2">3. Generate Cheatsheet</h2>
+        <h2 className="text-xl font-semibold mb-2">Generate Cheatsheet</h2>
         <p className="text-gray-600 mb-4">Click the button below to create your personalized cheatsheet:</p>
         <Button onClick={handleSubmit} disabled={isSubmitting}>
           {isSubmitting ? 'Generating...' : 'Generate Cheatsheet'}
