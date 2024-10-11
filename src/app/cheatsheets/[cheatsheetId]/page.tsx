@@ -3,9 +3,11 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 interface CheatsheetContent {
-  [key: string]: any;
+  text: string;
 }
 
 interface Cheatsheet {
@@ -49,36 +51,29 @@ export default function CheatsheetDetail({ params }: { params: { cheatsheetId: s
     return date.toLocaleString();
   };
 
-  const renderContent = (content: any, depth: number = 0) => {
-    if (typeof content === 'string') {
-      return <p>{content}</p>;
-    }
-
-    if (Array.isArray(content)) {
+  const renderContent = (content: CheatsheetContent) => {
+    if (typeof content.text === 'string') {
       return (
-        <ul className="list-disc pl-6">
-          {content.map((item, index) => (
-            <li key={index}>{renderContent(item, depth + 1)}</li>
-          ))}
-        </ul>
+        <ReactMarkdown 
+          remarkPlugins={[remarkGfm]}
+          components={{
+            h1: ({node, ...props}) => <h1 className="text-3xl font-bold mt-6 mb-4" {...props} />,
+            h2: ({node, ...props}) => <h2 className="text-2xl font-semibold mt-5 mb-3" {...props} />,
+            h3: ({node, ...props}) => <h3 className="text-xl font-medium mt-4 mb-2" {...props} />,
+            p: ({node, ...props}) => <p className="mb-4" {...props} />,
+            ul: ({node, ...props}) => <ul className="list-disc pl-6 mb-4" {...props} />,
+            ol: ({node, ...props}) => <ol className="list-decimal pl-6 mb-4" {...props} />,
+            li: ({node, ...props}) => <li className="mb-1" {...props} />,
+            code: ({node, inline, ...props}) => 
+              inline 
+                ? <code className="bg-gray-100 rounded px-1" {...props} />
+                : <pre className="bg-gray-100 rounded p-4 overflow-x-auto"><code {...props} /></pre>
+          }}
+        >
+          {cheatsheet.content.text}
+        </ReactMarkdown>
       );
     }
-
-    if (typeof content === 'object' && content !== null) {
-      return (
-        <div className="space-y-4">
-          {Object.entries(content).map(([key, value]) => (
-            <div key={key}>
-              <h3 className={`font-semibold ${depth === 0 ? 'text-2xl mb-4' : 'text-xl mb-2'}`}>
-                {key.charAt(0).toUpperCase() + key.slice(1)}
-              </h3>
-              {renderContent(value, depth + 1)}
-            </div>
-          ))}
-        </div>
-      );
-    }
-
     return null;
   };
 
@@ -91,10 +86,8 @@ export default function CheatsheetDetail({ params }: { params: { cheatsheetId: s
         </p>
       </div>
 
-      <h1 className="text-3xl font-bold mb-6">Cheatsheet Content</h1>
-
       <div className="space-y-8">
-        {renderContent(cheatsheet.content)}
+        {cheatsheet && renderContent(cheatsheet.content)}
       </div>
     </div>
   );
