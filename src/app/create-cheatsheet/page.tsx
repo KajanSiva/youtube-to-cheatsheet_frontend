@@ -2,8 +2,6 @@
 
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { Input } from "@/components/ui/input"
@@ -11,16 +9,6 @@ import { Input } from "@/components/ui/input"
 interface VideoDetails {
   id: string;
   title: string;
-}
-
-interface Theme {
-  title: string;
-  subThemes: string[];
-  description: string;
-}
-
-interface DiscussionTopics {
-  themes: Theme[];
 }
 
 const languages = [
@@ -38,9 +26,7 @@ export default function CreateCheatsheet() {
   const { toast } = useToast()
   const videoId = searchParams.get('videoId')
   const [videoDetails, setVideoDetails] = useState<VideoDetails | null>(null)
-  const [discussionTopics, setDiscussionTopics] = useState<DiscussionTopics | null>(null)
   const [selectedLanguage, setSelectedLanguage] = useState('')
-  const [selectedTopics, setSelectedTopics] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [comment, setComment] = useState('')
 
@@ -49,20 +35,17 @@ export default function CreateCheatsheet() {
       if (!videoId) return
 
       try {
-        const [videoResponse, topicsResponse] = await Promise.all([
+        const [videoResponse] = await Promise.all([
           fetch(`http://localhost:3000/youtube-videos/${videoId}`),
-          fetch(`http://localhost:3000/youtube-videos/${videoId}/discussion-topics`)
         ])
 
-        if (!videoResponse.ok || !topicsResponse.ok) {
+        if (!videoResponse.ok) {
           throw new Error('Failed to fetch data')
         }
 
         const videoData = await videoResponse.json()
-        const topicsData = await topicsResponse.json()
 
         setVideoDetails(videoData)
-        setDiscussionTopics(topicsData.discussionTopics)
       } catch (error) {
         console.error('Error fetching data:', error)
       }
@@ -73,14 +56,6 @@ export default function CreateCheatsheet() {
 
   const handleLanguageChange = (value: string) => {
     setSelectedLanguage(value)
-  }
-
-  const handleTopicToggle = (title: string) => {
-    setSelectedTopics(prev =>
-      prev.includes(title)
-        ? prev.filter(t => t !== title)
-        : [...prev, title]
-    )
   }
 
   const handleCommentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,7 +111,7 @@ export default function CreateCheatsheet() {
     }
   }
 
-  if (!videoDetails || !discussionTopics) {
+  if (!videoDetails) {
     return <div>Loading...</div>
   }
 
