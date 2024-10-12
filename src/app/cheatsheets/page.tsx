@@ -6,6 +6,8 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Button } from "@/components/ui/button"
 import Link from 'next/link'
 import Image from 'next/image'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 interface Cheatsheet {
   id: string;
@@ -21,6 +23,8 @@ interface VideoDetails {
   title: string;
   thumbnailUrl: string;
   youtubeId: string;
+  persona: string;
+  mainTheme: string;
 }
 
 export default function CheatsheetsList() {
@@ -80,7 +84,7 @@ export default function CheatsheetsList() {
 
       {videoDetails && (
         <div className="mb-8">
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-6 mb-4">
             <Image
               src={videoDetails.thumbnailUrl || '/images/thumbnail-placeholder.png'}
               alt={videoDetails.title}
@@ -98,6 +102,26 @@ export default function CheatsheetsList() {
               >
                 Watch Video
               </a>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <h2 className="text-xl font-semibold mb-2">Persona</h2>
+              <ReactMarkdown 
+                remarkPlugins={[remarkGfm]}
+                className="prose"
+              >
+                {videoDetails.persona}
+              </ReactMarkdown>
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold mb-2">Main Theme</h2>
+              <ReactMarkdown 
+                remarkPlugins={[remarkGfm]}
+                className="prose"
+              >
+                {videoDetails.mainTheme}
+              </ReactMarkdown>
             </div>
           </div>
         </div>
