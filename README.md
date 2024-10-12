@@ -2,6 +2,8 @@
 
 This project is a NextJS-based frontend application that generates custom cheatsheets from YouTube videos.
 
+https://youtu.be/S3faLLZhIo4
+
 ## Project Purpose
 
 The main purpose of this application is to:
