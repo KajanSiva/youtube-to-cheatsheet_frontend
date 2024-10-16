@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useSearchParams } from 'next/navigation'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import Link from 'next/link'
 import Image from 'next/image'
 import { CustomMarkdown } from '@/components/CustomMarkdown'
@@ -103,19 +104,38 @@ export default function CheatsheetsList() {
               </a>
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <h2 className="text-xl font-semibold mb-2">Persona</h2>
-              <CustomMarkdown className="prose">
-                {videoDetails.persona}
-              </CustomMarkdown>
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold mb-2">Main Theme</h2>
-              <CustomMarkdown className="prose">
-                {videoDetails.mainTheme}
-              </CustomMarkdown>
-            </div>
+          <h2 className="text-2xl font-semibold mt-6 mb-3">Video Context</h2>
+          <div className="flex gap-4">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline">View Persona</Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px] w-full">
+                <DialogHeader>
+                  <DialogTitle>Persona</DialogTitle>
+                </DialogHeader>
+                <div className="max-h-[60vh] overflow-y-auto pr-4">
+                  <CustomMarkdown className="prose">
+                    {videoDetails.persona}
+                  </CustomMarkdown>
+                </div>
+              </DialogContent>
+            </Dialog>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline">View Main Theme</Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px] w-full">
+                <DialogHeader>
+                  <DialogTitle>Main Theme</DialogTitle>
+                </DialogHeader>
+                <div className="max-h-[60vh] overflow-y-auto pr-4">
+                  <CustomMarkdown className="prose">
+                    {videoDetails.mainTheme}
+                  </CustomMarkdown>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       )}
