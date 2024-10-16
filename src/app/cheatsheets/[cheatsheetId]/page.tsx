@@ -65,7 +65,7 @@ export default function CheatsheetDetail({ params }: { params: { cheatsheetId: s
         </p>
       </div>
 
-      <div className="space-y-8">
+      <div className="max-w-3xl mx-auto space-y-8">
         {cheatsheet && renderContent(cheatsheet.content)}
       </div>
     </div>
